@@ -68,10 +68,10 @@ Separado em `server.py` e `client.py` rodando em máquinas distintas (original u
 
 ```bash
 # Máquina A — inicie primeiro
-python client-server/server.py
+python3 client-server/server.py
 
 # Máquina B
-python client-server/client.py <IP_MAQUINA_A>
+python3 client-server/client.py <IP_MAQUINA_A>
 ```
 
 ### Exemplo de saída
@@ -112,13 +112,13 @@ Separado em `publisher.py` e `subscriber.py` em máquinas distintas (original us
 
 ```bash
 # Máquina A — inicie primeiro
-python pub-sub/publisher.py
+python3 pub-sub/publisher.py
 
 # Máquina B — assina todos os tópicos
-python pub-sub/subscriber.py <IP_MAQUINA_A>
+python3 pub-sub/subscriber.py <IP_MAQUINA_A>
 
 # Máquina B — assina apenas UPPER e REVERSE
-python pub-sub/subscriber.py <IP_MAQUINA_A> UPPER REVERSE
+python3 pub-sub/subscriber.py <IP_MAQUINA_A> UPPER REVERSE
 ```
 
 ### Exemplo de saída
@@ -169,13 +169,13 @@ A ordem importa: middle e consumer devem estar prontos antes de o producer envia
 
 ```bash
 # 1º — Máquina B
-python pipeline/middle.py <IP_MAQUINA_A>
+python3 pipeline/middle.py <IP_MAQUINA_A>
 
 # 2º — Máquina C
-python pipeline/consumer.py <IP_MAQUINA_B>
+python3 pipeline/consumer.py <IP_MAQUINA_B>
 
 # 3º — Máquina A (por último)
-python pipeline/producer.py
+python3 pipeline/producer.py
 ```
 
 ### Exemplo de saída

@@ -1,9 +1,3 @@
-"""
-Baseado em taskwork.py (recebe) + tasksrc.py (envia)
-Estágio do meio: consumer/producer
-Recebe tarefa do producer, aplica a transformação (UPPER/LOWER/REVERSE/COUNT)
-e repassa o resultado para o consumer final
-"""
 import zmq, time, pickle, sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from config import PORT_1, PORT_2, MACHINE_A
@@ -20,27 +14,24 @@ def middle(producer_ip=None):
 
     context = zmq.Context()
 
-    # PULL — recebe do producer
-    r = context.socket(zmq.PULL)             # create a pull socket
-    r.connect(f"tcp://{prod_ip}:{PORT_1}")   # connect to task source (IP externo)
+    r = context.socket(zmq.PULL)
+    r.connect(f"tcp://{prod_ip}:{PORT_1}")
     print(f"[MIDDLE] Conectado ao producer em {prod_ip}:{PORT_1}")
 
-    # PUSH — repassa para o consumer final
     p = context.socket(zmq.PUSH)
     p.bind(f"tcp://*:{PORT_2}")
     print(f"[MIDDLE] Repassando resultados na porta {PORT_2}\n")
 
     while True:
-        work     = pickle.loads(r.recv())    # receive work from a source
+        work     = pickle.loads(r.recv())
         origem   = work[0]
         workload = work[1]
         cmd      = work[2]
         text     = work[3]
 
         print(f"[MIDDLE] Recebeu de {origem} | cmd={cmd} | texto='{text[:30]}'")
-        time.sleep(workload * 0.01)          # pretend to work
+        time.sleep(workload * 0.01)
 
-        # Aplica a transformação neste estágio
         result = apply_command(cmd, text)
 
         task_out = ("middle-B", workload, cmd, result)

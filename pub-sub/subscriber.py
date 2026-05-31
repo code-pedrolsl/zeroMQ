@@ -1,7 +1,7 @@
 """
 Baseado em zmq_pub-sub.py (função client)
 Mudanças: separado em subscriber.py, conecta em IP externo via argumento,
-          permite escolher tópicos (original só tinha TIME)
+          assina tópicos TIME/UPPER/LOWER/REVERSE/COUNT e exibe resultados processados
 """
 import zmq, time, sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
@@ -9,7 +9,7 @@ from config import PORT_1, MACHINE_A
 
 def subscriber(pub_ip=None, topics=None):
     ip     = pub_ip or MACHINE_A
-    topics = topics or ["TIME", "TEMP", "LOAD"]
+    topics = topics or ["TIME", "UPPER", "LOWER", "REVERSE", "COUNT"]
 
     context = zmq.Context()
     socket  = context.socket(zmq.SUB)        # create a subscriber socket
@@ -19,9 +19,20 @@ def subscriber(pub_ip=None, topics=None):
         socket.setsockopt(zmq.SUBSCRIBE, t.encode())  # subscribe
         print(f"[SUBSCRIBER] Inscrito: {t}")
 
-    for i in range(15):                       # 15 iterações (original usa 5, aumentado para ver todos os tópicos)
-        msg = socket.recv()                   # receive a message
-        print(msg.decode())                   # print the result
+    print()
+    counts = {t: 0 for t in topics}
+
+    for i in range(20):                       # 20 mensagens (original usa 5)
+        msg   = socket.recv().decode()        # receive a message
+        topic = msg.split()[0]
+        body  = msg[len(topic)+1:]
+        counts[topic] = counts.get(topic, 0) + 1
+        ts = time.strftime("%H:%M:%S")
+        print(f"[{ts}] [{topic}] {body}")     # print the result
+
+    print("\n=== Resumo ===")
+    for t, n in counts.items():
+        print(f"  {t}: {n} mensagens recebidas")
 
 if __name__ == "__main__":
     pub_ip = sys.argv[1] if len(sys.argv) > 1 else None
